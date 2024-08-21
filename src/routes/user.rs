@@ -14,7 +14,7 @@ use actix_web::{get, HttpResponse, Responder};
 
 #[get("/user")]
 async fn user() -> impl Responder {
-	let mongodb_uri = std::env::var("MONGODB_URI");
+	let mongodb_uri: Result<String, std::env::VarError> = std::env::var("MONGODB_URI");
 	println!("{:?}", std::env::var("MONGODB_URI"));
 
 	match mongodb_uri {
