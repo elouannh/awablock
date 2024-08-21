@@ -1,6 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   user.rs                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ehosta <ehosta@student.42lyon.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/21 20:18:03 by ehosta            #+#    #+#             */
+/*   Updated: 2024/08/21 20:18:03 by ehosta           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 use actix_web::{get, HttpResponse, Responder};
 
 #[get("/user")]
 async fn user() -> impl Responder {
-	HttpResponse::Ok().body("You currently are a cool human.")
+	let mongodb_uri = std::env::var("MONGODB_URI");
+	println!("{:?}", std::env::var("MONGODB_URI"));
+
+	match mongodb_uri {
+		Ok(uri) => {
+			HttpResponse::Ok().body(uri)
+		},
+		Err(_) => {
+			HttpResponse::InternalServerError().body("Error.")
+		}
+	}
 }
