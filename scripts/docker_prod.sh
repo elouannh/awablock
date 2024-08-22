@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENV_FILE=".env"
+ENV_FILE="envs/prod/.env"
 
 if [ -f "$ENV_FILE" ]; then
 	export $(grep -v '#^' $ENV_FILE | xargs)
