@@ -16,5 +16,3 @@ if [ $? -ne 0 ]; then
 fi
 
 ./target/debug/awablock
-
-./debug/debug.sh

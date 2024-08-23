@@ -12,4 +12,4 @@
 
 FROM rust:1.80
 COPY ./ ./
-CMD ["./scripts/docker_dev.sh"]
+CMD ["sh", "./scripts/docker_dev.sh"]

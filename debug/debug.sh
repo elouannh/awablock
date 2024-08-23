@@ -1,10 +1,10 @@
 #!/bin/bash
 
-declare -a addresses=("http://localhost:8080" "http://localhost:4040")
+declare -a addresses=("http://localhost:8080")
 
 for addr in "${addresses[@]}"
 do
-	declare -a routes=(" " "user")
+	declare -a routes=(" " "login" "health")
 	echo -e "\tTesting routes for $addr"
 	count=0
 	for route in "${routes[@]}"

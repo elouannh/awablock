@@ -1,49 +1,24 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.rs                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ehosta <ehosta@student.42lyon.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/21 20:18:07 by ehosta            #+#    #+#             */
-/*   Updated: 2024/08/21 20:18:07 by ehosta           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+use actix_web::{ web, App, HttpServer };
+use mongodb::Client;
 
-use actix_web::{ App, HttpServer };
-use mongodb::{ bson::{ doc, Document }, Client, Collection };
 mod routes;
+mod services;
+mod structs;
 
-fn get_env_var_as_str<'a>(var_name: &'a str, default: &'a str) -> String {
-    match std::env::var(var_name) {
-        Ok(value) => {
-            String::from(value)
-        },
-        Err(_) => {
-            String::from(default)
-        },
-    }
-}
-
-async fn db() -> mongodb::error::Result<()>
-{
-    let uri: String = get_env_var_as_str("MONGODB_URI", "empty");
-    let client: Client = Client::with_uri_str(uri).await?;
-    let database: mongodb::Database = client.database("sample_mflix");
-    let my_coll: Collection<Document> = database.collection("movies");
-    let my_movie: Option<Document> = my_coll.find_one(doc! { "title": "The Perils of Pauline" }).await?;
-    println!("Found a movie:\n{:#?}", my_movie);
-    Ok(())
-}
+use crate::routes::health as health_route;
+use crate::routes::login as login_route;
+use crate::services::env_manager as env_manager_service;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
 {
-	let _ = db().await;
-	HttpServer::new(|| {
+    let uri: String = env_manager_service::get_env_var_as_str("MONGODB_URI", "empty");
+    let client: Client = Client::with_uri_str(uri).await.unwrap();
+	HttpServer::new(move || {
 		App::new()
-			.service(routes::greet::greet)
-			.service(routes::user::user)
+			.app_data(web::Data::new(client.clone()))
+			.route("/health", web::get().to(health_route::get_health))
+			.route("/login", web::post().to(login_route::post_login))
 	})
 	.bind("127.0.0.1:8080")?
 	.run()
