@@ -1,5 +1,17 @@
-use actix_web::{web, HttpResponse, Result};
-use mongodb::{Client, bson::doc, Collection, bson::Bson::Document};
+use actix_web::{
+	web,
+	HttpResponse,
+	Result
+};
+use mongodb::{
+	bson::{
+		doc,
+		Bson::Document
+	},
+	Client,
+	Collection,
+};
+
 use crate::structs::user as user_struct;
 
 async fn post_register(
